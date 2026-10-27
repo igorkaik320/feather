@@ -38,6 +38,20 @@ public struct ASRepository: Sendable, Decodable, Hashable, Identifiable {
 
 	public init(from decoder: any Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
+
+		if
+			!container.contains(.apps),
+			let scarlet = try? ASScarletRepository(from: decoder),
+			!scarlet.apps.isEmpty
+		{
+			self.name = scarlet.name
+			self.iconURL = scarlet.iconURL
+			self.apps = scarlet.apps
+			self.featuredApps = []
+			self.news = []
+			return
+		}
+
 		self.id = try container.decodeIfPresent(String.self, forKey: .id)
 		self.name = try container.decodeIfPresent(String.self, forKey: .name)
 
